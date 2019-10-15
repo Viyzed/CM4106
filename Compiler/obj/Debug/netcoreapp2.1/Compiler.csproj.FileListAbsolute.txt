@@ -1,0 +1,11 @@
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\bin\Debug\netcoreapp2.1\Compiler.deps.json
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\bin\Debug\netcoreapp2.1\Compiler.runtimeconfig.json
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\bin\Debug\netcoreapp2.1\Compiler.runtimeconfig.dev.json
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\bin\Debug\netcoreapp2.1\Compiler.dll
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\bin\Debug\netcoreapp2.1\Compiler.pdb
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.csprojAssemblyReference.cache
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.csproj.CoreCompileInputs.cache
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.AssemblyInfoInputs.cache
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.AssemblyInfo.cs
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.dll
+\\nas-csdm.rgu.ac.uk\csdm-H\students\14\1407637\From_Desktop\Week 3\CompilerWeek3\Compiler\obj\Debug\netcoreapp2.1\Compiler.pdb
