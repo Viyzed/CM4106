@@ -17,7 +17,7 @@
 
         public override string ToString()
         {
-            return "The error is located at line " + this.lineNo + " at position " + this.position;
+            return "Located at line " + this.lineNo + " at position " + this.position;
         }
 
     }

@@ -1,4 +1,6 @@
 ﻿using Compiler.IO;
+using Compiler.Nodes;
+using Compiler.SyntacticAnalysis;
 using Compiler.Tokenization;
 using System;
 using System.Collections.Generic;
@@ -27,6 +29,11 @@ namespace Compiler
         /// </summary>
         public Tokenizer Tokenizer { get; }
 
+        ///<summary>
+        /// The parser
+        /// </summary>
+        public Parser Parser { get; }
+
         /// <summary>
         /// Creates a new compiler
         /// </summary>
@@ -36,6 +43,7 @@ namespace Compiler
             Reporter = new ErrorReporter();
             Reader = new FileReader(inputFile);
             Tokenizer = new Tokenizer(Reader, Reporter);
+            Parser = new Parser(Reporter);
         }
 
         /// <summary>
@@ -49,7 +57,16 @@ namespace Compiler
             if (Reporter.HasErrors) return;
             WriteLine("Done");
 
-            WriteLine(string.Join("\n", tokens));
+            //WriteLine(string.Join("\n", tokens));
+
+            // Parse 
+            Write("Parsing...");
+            ProgramNode tree = Parser.Parse(tokens);
+            if (Reporter.HasErrors) return;
+            WriteLine("Done.");
+
+            //Display the Abstract Syntax Tree
+            WriteLine(TreePrinter.ToString(tree));
         }
 
         /// <summary>
@@ -58,6 +75,7 @@ namespace Compiler
         private void WriteFinalMessage()
         {
             // Write output to tell the user whether it worked or not here
+            Write("Final Messege.");
         }
 
         /// <summary>

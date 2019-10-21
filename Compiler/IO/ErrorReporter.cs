@@ -10,6 +10,6 @@ namespace Compiler.IO
         /// <summary>
         /// Whether or not any errors have been encountered
         /// </summary>
-        public bool HasErrors { get; }
+        public bool HasErrors { get; set; }
     }
 }
