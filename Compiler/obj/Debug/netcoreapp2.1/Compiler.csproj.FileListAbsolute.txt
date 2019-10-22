@@ -19,3 +19,14 @@ C:\Users\Andrew\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.Assembly
 C:\Users\Andrew\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.AssemblyInfo.cs
 C:\Users\Andrew\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.dll
 C:\Users\Andrew\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.pdb
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.csprojAssemblyReference.cache
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.csproj.CoreCompileInputs.cache
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.AssemblyInfoInputs.cache
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.AssemblyInfo.cs
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.dll
+H:\GitHub\CM4106\Compiler\obj\Debug\netcoreapp2.1\Compiler.pdb
+H:\GitHub\CM4106\Compiler\bin\Debug\netcoreapp2.1\Compiler.deps.json
+H:\GitHub\CM4106\Compiler\bin\Debug\netcoreapp2.1\Compiler.runtimeconfig.json
+H:\GitHub\CM4106\Compiler\bin\Debug\netcoreapp2.1\Compiler.runtimeconfig.dev.json
+H:\GitHub\CM4106\Compiler\bin\Debug\netcoreapp2.1\Compiler.dll
+H:\GitHub\CM4106\Compiler\bin\Debug\netcoreapp2.1\Compiler.pdb

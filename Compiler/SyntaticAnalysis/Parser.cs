@@ -114,99 +114,125 @@ namespace Compiler.SyntacticAnalysis
         /// <summary>
         /// Parses a single command
         /// </summary>
-        private void ParseSingleCommand()
+        /// <returns>An abstract syntax tree representing the program</returns>
+        private ICommandNode ParseSingleCommand()
         {
             Debugger.Write("Parsing Single Command");
             switch (CurrentToken.Type)
             {
                 // There are missing cases here - you'll need to fill them all in
                 case Identifier:
-                    ParseAssignmentOrCallCommand();
-                    break;
+                    return ParseAssignmentOrCallCommand();
                 case Begin:
-                    ParseBeginCommand();
-                    break;
+                    return ParseBeginCommand();
                 case Let:
-                    ParseLetCommand();
-                    break;
+                    return ParseLetCommand();
                 case If:
-                    ParseIfCommand();
-                    break;
+                    return ParseIfCommand();
                 case While:
-                    ParseWhileCommand();
-                    break;
+                    return ParseWhileCommand();
+                default:
+                    return ParseSkipCommand();
             }
         }
 
         /// <summary>
         /// Parses an assignment or call command
         /// </summary>
-        private void ParseAssignmentOrCallCommand()
+        /// <returns>An abstract syntax tree representing the program</returns>
+        private ICommandNode ParseAssignmentOrCallCommand()
         {
             Debugger.Write("Parsing Assignment Command or Call Command");
-            ParseIdentifier();
+            Position startPosition = CurrentToken.Position; //differs
+            IdentifierNode identifier = ParseIdentifier();
             if (CurrentToken.Type == LeftBracket)
             {
                 Debugger.Write("Parsing Call Command");
                 Accept(LeftBracket);
-                ParseParameter();
+                IParameterNode parameter = ParseParameter();
                 Accept(RightBracket);
+                return new CallCommandNode(identifier, parameter);
             }
             else if (CurrentToken.Type == Becomes)
             {
                 Debugger.Write("Parsing Assignment Command");
                 Accept(Becomes);
-                ParseExpression();
+                IExpressionNode expression = ParseExpression();
+                return new AssignCommandNode(identifier, expression);
+            } else
+            {
+                return new ErrorNode(startPosition);
             }
+        }
+
+        /// <summary>
+        /// Parses a skip command
+        /// </summary>
+        /// <returns>An abstract syntax tree representing the skip command</returns>
+        private ICommandNode ParseSkipCommand()
+        {
+            Debugger.Write("Parsing Skip Command");
+            Position startPosition = CurrentToken.Position; //differs
+            return new BlankCommandNode(startPosition);
         }
 
         /// <summary>
         /// Parses a begin command
         /// </summary>
-        private void ParseBeginCommand()
+        /// <returns>An abstract syntax tree representing the skip command</returns>
+        private ICommandNode ParseBeginCommand()
         {
             Debugger.Write("Parsing Begin Command");
             Accept(Begin);
-            ParseCommand();
+            ICommandNode command = ParseCommand();
             Accept(End);
+            return command;
         }
 
         /// <summary>
         /// Parses a while command
         /// </summary>
-        private void ParseWhileCommand()
+        /// <returns>An abstract syntax tree representing the skip command</returns>
+        private ICommandNode ParseWhileCommand()
         {
             Debugger.Write("Parsing While Command");
+            Position startPosition = CurrentToken.Position; //differs
             Accept(While);
-            ParseExpression();
+            IExpressionNode expression = ParseExpression();
             Accept(Do);
-            ParseSingleCommand();
+            ICommandNode command = ParseSingleCommand();
+            return new WhileCommandNode(expression, command, startPosition);
         }
 
         /// <summary>
         /// Parses an if command
         /// </summary>
-        private void ParseIfCommand()
+        /// <returns>An abstract syntax tree representing the skip command</returns>
+        private ICommandNode ParseIfCommand()
         {
             Debugger.Write("Parsing If Command");
+            Position startPosition = CurrentToken.Position; //differs
             Accept(If);
-            ParseExpression();
+            IExpressionNode expression = ParseExpression();
             Accept(Then);
-            ParseSingleCommand();
+            ICommandNode thenCommand = ParseSingleCommand();
             Accept(Else);
-            ParseSingleCommand();
+            ICommandNode elseCommand = ParseSingleCommand();
+            return new IfCommandNode(expression, thenCommand, elseCommand, startPosition);
         }
 
         /// <summary>
         /// Parses a let command
         /// </summary>
-        private void ParseLetCommand()
+        private ICommandNode ParseLetCommand()
         {
             Debugger.Write("Parsing Let Command");
+            Position startPosition = CurrentToken.Position; //differs
             Accept(Let);
-            ParseDeclaration();
+            IDeclarationNode declaration = ParseDeclaration();
             Accept(In);
-            ParseSingleCommand();
+            ICommandNode command = ParseSingleCommand();
+            return new LetCommandNode(declaration, command, startPosition);
         }
 
 
@@ -214,21 +240,49 @@ namespace Compiler.SyntacticAnalysis
         /// <summary>
         /// Parses a parameter
         /// </summary>
-        private void ParseParameter()
+        /// <returns>An abstract syntax tree representing the expression parameter</returns>
+        private IParameterNode ParseParameter()
         {
             Debugger.Write("Parsing Parameter");
             switch (CurrentToken.Type)
             {
+                case Identifier:
+                case IntLiteral:
+                case CharLiteral:
+                case Operator:
+                case LeftBracket:
+                    return ParseExpressionParameter();
                 case RightBracket:
-                    // Empty parameter list
-                    break;
+                    return new BlankParameterNode(CurrentToken.Position); //differs
                 case Var:
-                    ParseVarParameter();
-                    break;
+                    return ParseVarParameter();
                 default:
-                    ParseValueParameter();
-                    break;
+                    return new ErrorNode(CurrentToken.Position); //differs
             }
+        }
+
+        /// <summary>
+        /// Parses a variable parameter
+        /// </summary>
+        /// <returns>An abstract syntax tree representing the variable parameter</returns>
+        private IParameterNode ParseVarParameter()
+        {
+            Debugger.Write("Parsing Variable Parameter");
+            Position startPosition = CurrentToken.Position; //differs
+            Accept(Var);
+            IdentifierNode identifier = ParseIdentifier();
+            return new VarParameterNode(identifier, startPosition);
+        }
+
+        /// <summary>
+        /// Parses an expression parameter
+        /// </summary>
+        /// <returns>An abstract syntax tree representing the expression parameter</returns>
+        private IParameterNode ParseExpressionParameter()
+        {
+            Debugger.Write("Parsing Value Parameter");
+            IExpressionNode expression = ParseExpression();
+            return new ExpressionParameterNode(expression);
         }
 
         /// <summary>
@@ -240,174 +294,192 @@ namespace Compiler.SyntacticAnalysis
             ParseExpression();
         }
 
-        /// <summary>
-        /// Parses a variable parameter
-        /// </summary>
-        private void ParseVarParameter()
-        {
-            Debugger.Write("Parsing Variable Parameter");
-            Accept(Var);
-            ParseIdentifier();
-        }
-
 
 
         /// <summary>
         /// Parses an expression
         /// </summary>
-        private void ParseExpression()
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
+        private IExpressionNode ParseExpression()
         {
             Debugger.Write("Parsing Expression");
-            ParsePrimaryExpression();
+            IExpressionNode leftExpression = ParsePrimaryExpression();
             while (CurrentToken.Type == Operator)
             {
-                ParseOperator();
-                ParsePrimaryExpression();
+                OperatorNode operation = ParseOperator();
+                IExpressionNode rightExpression = ParsePrimaryExpression();
+                leftExpression = new BinaryExpressionNode(leftExpression, operation, rightExpression);
             }
+            return leftExpression;
         }
 
         /// <summary>
         /// Parses a primary expression
         /// </summary>
-        private void ParsePrimaryExpression()
+        /// <returns>An abstract syntax tree representing the primary expression</returns>
+        private IExpressionNode ParsePrimaryExpression()
         {
             Debugger.Write("Parsing Primary Expression");
             switch (CurrentToken.Type)
             {
                 case IntLiteral:
-                    ParseIntExpression();
-                    break;
+                    return ParseIntExpression();
                 case CharLiteral:
-                    ParseCharExpression();
-                    break;
+                    return ParseCharExpression();
                 case Identifier:
-                    ParseIdExpression();
-                    break;
+                    return ParseIdExpression();
                 case Operator:
-                    ParseUnaryExpression();
-                    break;
+                    return ParseUnaryExpression();
                 case LeftBracket:
-                    ParseBracketExpression();
-                    break;
+                    return ParseBracketExpression();
+                default:
+                    return new ErrorNode(CurrentToken.Position); //differs
             }
         }
 
         /// <summary>
         /// Parses an int expression
         /// </summary>
-        private void ParseIntExpression()
+        /// <returns>An abstract syntax tree representing the int expression</returns>
+        private IExpressionNode ParseIntExpression()
         {
             Debugger.Write("Parsing Int Expression");
-            ParseIntegerLiteral();
+            IntegerLiteralNode intLit = ParseIntegerLiteral();
+            return new IntegerExpressionNode(intLit);
         }
 
         /// <summary>
         /// Parses a char expression
         /// </summary>
-        private void ParseCharExpression()
+        /// <returns>An abstract syntax tree representing the char expression</returns>
+        private IExpressionNode ParseCharExpression()
         {
             Debugger.Write("Parsing Char Expression");
-            ParseCharacterLiteral();
+            CharacterLiteralNode charLit = ParseCharacterLiteral();
+            return new CharacterExpressionNode(charLit);
         }
 
         /// <summary>
         /// Parses an ID expression
         /// </summary>
-        private void ParseIdExpression()
+        /// <returns>An abstract syntax tree representing the expression</returns>
+        private IExpressionNode ParseIdExpression()
         {
-            Debugger.Write("Parsing Call Expression or Identifier Expression");
-            ParseIdentifier();
+            Debugger.Write("Parsing Identifier Expression");
+            IdentifierNode identifier = ParseIdentifier();
+            return new IdExpressionNode(identifier);
         }
 
         /// <summary>
         /// Parses a unary expresion
         /// </summary>
-        private void ParseUnaryExpression()
+        /// <returns>An abstract syntax tree representing the unary expression</returns>
+        private IExpressionNode ParseUnaryExpression()
         {
             Debugger.Write("Parsing Unary Expression");
-            ParseOperator();
-            ParsePrimaryExpression();
+            OperatorNode operation = ParseOperator();
+            IExpressionNode expression = ParsePrimaryExpression();
+            return new UnaryExpressionNode(operation, expression);
         }
 
         /// <summary>
         /// Parses a bracket expression
         /// </summary>
-        private void ParseBracketExpression()
+        /// <returns>An abstract syntax tree representing the bracket expression</returns>
+        private IExpressionNode ParseBracketExpression()
         {
             Debugger.Write("Parsing Bracket Expression");
             Accept(LeftBracket);
-            ParseExpression();
+            IExpressionNode expression = ParseExpression();
             Accept(RightBracket);
+            return expression;
         }
+
 
 
 
         /// <summary>
         /// Parses a declaration
         /// </summary>
-        private void ParseDeclaration()
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
+        private IDeclarationNode ParseDeclaration()
         {
             Debugger.Write("Parsing Declaration");
-            ParseSingleDeclaration();
+            List<IDeclarationNode> declarations = new List<IDeclarationNode>();
+            declarations.Add(ParseSingleDeclaration());
             while (CurrentToken.Type == Semicolon)
             {
                 Accept(Semicolon);
-                ParseSingleDeclaration();
+                declarations.Add(ParseSingleDeclaration());
+            }
+            if(declarations.Count == 1)
+            {
+                return declarations[0];
+            } else
+            {
+                return new SequentialDeclarationNode(declarations);
             }
         }
 
         /// <summary>
         /// Parses a single declaration
         /// </summary>
-        private void ParseSingleDeclaration()
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
+        private IDeclarationNode ParseSingleDeclaration()
         {
             Debugger.Write("Parsing Single Declaration");
             switch (CurrentToken.Type)
             {
                 case Const:
-                    ParseConstDeclaration();
-                    break;
+                    return ParseConstDeclaration();
                 case Var:
-                    ParseVarDeclaration();
-                    break;
+                    return ParseVarDeclaration();
                 default:
-                    break;
+                    return new ErrorNode(CurrentToken.Position); //differs
             }
         }
 
         /// <summary>
         /// Parses a constant declaration
         /// </summary>
-        private void ParseConstDeclaration()
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
+        private IDeclarationNode ParseConstDeclaration()
         {
             Debugger.Write("Parsing Constant Declaration");
+            Position startPosition = CurrentToken.Position; //differs
             Accept(Const);
-            ParseIdentifier();
+            IdentifierNode identifier = ParseIdentifier();
             Accept(Is);
-            ParseExpression();
+            IExpressionNode expression = ParseExpression();
+            return new ConstDeclarationNode(identifier, expression, startPosition);
         }
 
         /// <summary>
         /// Parses a variable declaration
         /// </summary>
-        private void ParseVarDeclaration()
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
+        private IDeclarationNode ParseVarDeclaration()
         {
             Debugger.Write("Parsing Variable Declaration");
+            Position startPosition = CurrentToken.Position; //differs
             Accept(Var);
-            ParseIdentifier();
+            IdentifierNode identifier = ParseIdentifier();
             Accept(Colon);
-            ParseTypeDenoter();
+            TypeDenoterNode typeDenoter = ParseTypeDenoter();
+            return new VarDeclarationNode(identifier, typeDenoter, startPosition);
         }
 
 
 
         /// <summary>
         /// Parses a type denoter
+        /// <returns>An abstract syntax tree representing the single declaration</returns>
         /// </summary>
-        private void ParseTypeDenoter()
+        private TypeDenoterNode ParseTypeDenoter()
         {
             Debugger.Write("Parsing Type Denoter");
-            ParseIdentifier();
+            IdentifierNode identifier = ParseIdentifier();
+            return new TypeDenoterNode(identifier);
         }
 
 

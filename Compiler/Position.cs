@@ -6,8 +6,8 @@
     public class Position
     {
 
-        int lineNo { get; } = 0;
-        int position { get; } = 0;
+        int lineNo { get; }
+        int position { get; }
 
         public Position(int lineNo, int position)
         {
@@ -17,8 +17,13 @@
 
         public override string ToString()
         {
-            return "Located at line " + this.lineNo + " at position " + this.position;
+            if (this == BuiltIn)
+                return "System defined";
+            else
+                return $"Line {lineNo}, Column {position}";
         }
+
+        public static Position BuiltIn { get; } = new Position(-1, -1);
 
     }
 }

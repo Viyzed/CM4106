@@ -77,7 +77,7 @@ namespace Compiler.Tokenization
             if (tokenType == TokenType.Error)
             {
                 Reporter.HasErrors = true;
-
+                //Reporter.ReportError()
             }
 
             return token;

@@ -15,7 +15,7 @@
         /// </summary>
         public string Spelling { get; }
 
-        public Position tokenStartPosition { get; }
+        public Position Position { get; }
 
         /// <summary>
         /// Creates a token in the source language
@@ -26,14 +26,14 @@
         {
             Spelling = spelling;
             Type = type;
-            tokenStartPosition = position;
+            Position = position;
 
         }
 
         /// <inheritDoc />
         public override string ToString()
         {
-            return $"type={Type}, spelling=\"{Spelling}\", position={tokenStartPosition}";
+            return $"type={Type}, spelling=\"{Spelling}\", position={Position}";
         }
     }
 }
