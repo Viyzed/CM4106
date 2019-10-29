@@ -1,5 +1,6 @@
 ﻿using Compiler.IO;
 using Compiler.Nodes;
+using Compiler.SemanticAnalysis;
 using Compiler.SyntacticAnalysis;
 using Compiler.Tokenization;
 using System;
@@ -34,6 +35,11 @@ namespace Compiler
         /// </summary>
         public Parser Parser { get; }
 
+        ///<summary>
+        /// The idendifier
+        /// </summary>
+        public DeclarationIdentifier Identifier { get; }
+
         /// <summary>
         /// Creates a new compiler
         /// </summary>
@@ -44,6 +50,7 @@ namespace Compiler
             Reader = new FileReader(inputFile);
             Tokenizer = new Tokenizer(Reader, Reporter);
             Parser = new Parser(Reporter);
+            Identifier = new DeclarationIdentifier(Reporter);
         }
 
         /// <summary>
@@ -66,6 +73,14 @@ namespace Compiler
             WriteLine("Done.");
 
             //Display the Abstract Syntax Tree
+            WriteLine(TreePrinter.ToString(tree));
+
+            //Identify
+            Write("Identifying...");
+            Identifier.PerformIdentification(tree);
+            if (Reporter.HasErrors) return;
+            WriteLine("Done");
+
             WriteLine(TreePrinter.ToString(tree));
         }
 
