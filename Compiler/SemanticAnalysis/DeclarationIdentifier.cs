@@ -75,6 +75,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="programNode">The node to perform identification on</param>
         private void PerformIdentificationOnProgram(ProgramNode programNode)
         {
+            PerformIdentification(programNode.Command);
         }
 
 
@@ -85,6 +86,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="assignCommand">The node to perform identification on</param>
         private void PerformIdentificationOnAssignCommand(AssignCommandNode assignCommand)
         {
+            PerformIdentification(assignCommand.Identifier);
+            PerformIdentification(assignCommand.Expression);
         }
 
         /// <summary>
@@ -93,6 +96,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="blankCommand">The node to perform identification on</param>
         private void PerformIdentificationOnBlankCommand(BlankCommandNode blankCommand)
         {
+
         }
 
         /// <summary>
@@ -101,6 +105,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="callCommand">The node to perform identification on</param>
         private void PerformIdentificationOnCallCommand(CallCommandNode callCommand)
         {
+            PerformIdentification(callCommand.Identifier);
+            PerformIdentification(callCommand.Parameter);
         }
 
         /// <summary>
@@ -109,6 +115,9 @@ namespace Compiler.SemanticAnalysis
         /// <param name="ifCommand">The node to perform identification on</param>
         private void PerformIdentificationOnIfCommand(IfCommandNode ifCommand)
         {
+            PerformIdentification(ifCommand.Expression);
+            PerformIdentification(ifCommand.ThenCommand);
+            PerformIdentification(ifCommand.ElseCommand);
         }
 
         /// <summary>
@@ -117,6 +126,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="letCommand">The node to perform identification on</param>
         private void PerformIdentificationOnLetCommand(LetCommandNode letCommand)
         {
+            PerformIdentification(letCommand.Declaration);
+            PerformIdentification(letCommand.Command);
         }
 
         /// <summary>
@@ -125,6 +136,10 @@ namespace Compiler.SemanticAnalysis
         /// <param name="sequentialCommand">The node to perform identification on</param>
         private void PerformIdentificationOnSequentialCommand(SequentialCommandNode sequentialCommand)
         {
+            foreach(ICommandNode command in sequentialCommand.Commands)
+            {
+                PerformIdentification(command);
+            }
         }
 
         /// <summary>
@@ -133,6 +148,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="whileCommand">The node to perform identification on</param>
         private void PerformIdentificationOnWhileCommand(WhileCommandNode whileCommand)
         {
+            PerformIdentification(whileCommand.Expression);
+            PerformIdentification(whileCommand.Command);
         }
 
 
@@ -143,6 +160,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="constDeclaration">The node to perform identification on</param>
         private void PerformIdentificationOnConstDeclaration(ConstDeclarationNode constDeclaration)
         {
+            //Needs more
         }
 
         /// <summary>
@@ -151,6 +169,10 @@ namespace Compiler.SemanticAnalysis
         /// <param name="sequentialDeclaration">The node to perform identification on</param>
         private void PerformIdentificationOnSequentialDeclaration(SequentialDeclarationNode sequentialDeclaration)
         {
+            foreach(IDeclarationNode declaration in sequentialDeclaration.Declarations)
+            {
+                PerformIdentification(declaration);
+            }
         }
 
         /// <summary>
@@ -159,6 +181,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="varDeclaration">The node to perform identification on</param>
         private void PerformIdentificationOnVarDeclaration(VarDeclarationNode varDeclaration)
         {
+            //Needs more
         }
 
 
@@ -169,6 +192,10 @@ namespace Compiler.SemanticAnalysis
         /// <param name="binaryExpression">The node to perform identification on</param>
         private void PerformIdentificationOnBinaryExpression(BinaryExpressionNode binaryExpression)
         {
+            PerformIdentification(binaryExpression.LeftExpression);
+            PerformIdentification(binaryExpression.Op);
+            PerformIdentification(binaryExpression.RightExpression);
+            PerformIdentification(binaryExpression.Type);
         }
 
         /// <summary>
@@ -177,6 +204,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="characterExpression">The node to perform identification on</param>
         private void PerformIdentificationOnCharacterExpression(CharacterExpressionNode characterExpression)
         {
+            PerformIdentification(characterExpression.CharLit);
+            PerformIdentification(characterExpression.Type);
         }
 
         /// <summary>
@@ -185,6 +214,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="idExpression">The node to perform identification on</param>
         private void PerformIdentificationOnIdExpression(IdExpressionNode idExpression)
         {
+            PerformIdentification(idExpression.Identifier);
+            PerformIdentification(idExpression.Type);
         }
 
         /// <summary>
@@ -193,6 +224,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="integerExpression">The node to perform identification on</param>
         private void PerformIdentificationOnIntegerExpression(IntegerExpressionNode integerExpression)
         {
+            PerformIdentification(integerExpression.IntLit);
+            PerformIdentification(integerExpression.Type);
         }
 
         /// <summary>
@@ -201,6 +234,9 @@ namespace Compiler.SemanticAnalysis
         /// <param name="unaryExpression">The node to perform identification on</param>
         private void PerformIdentificationOnUnaryExpression(UnaryExpressionNode unaryExpression)
         {
+            PerformIdentification(unaryExpression.Op);
+            PerformIdentification(unaryExpression.Expression);
+            PerformIdentification(unaryExpression.Type);
         }
 
 
@@ -211,6 +247,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="blankParameter">The node to perform identification on</param>
         private void PerformIdentificationOnBlankParameter(BlankParameterNode blankParameter)
         {
+            PerformIdentification(blankParameter.Type);
         }
 
         /// <summary>
@@ -219,6 +256,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="expressionParameter">The node to perform identification on</param>
         private void PerformIdentificationOnExpressionParameter(ExpressionParameterNode expressionParameter)
         {
+            PerformIdentification(expressionParameter.Expression);
+            PerformIdentification(expressionParameter.Type);
         }
 
         /// <summary>
@@ -227,6 +266,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="varParameter">The node to perform identification on</param>
         private void PerformIdentificationOnVarParameter(VarParameterNode varParameter)
         {
+            PerformIdentification(varParameter.Identifier);
+            PerformIdentification(varParameter.Type);
         }
 
 
@@ -237,6 +278,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="typeDenoter">The node to perform identification on</param>
         private void PerformIdentificationOnTypeDenoter(TypeDenoterNode typeDenoter)
         {
+            PerformIdentification(typeDenoter.Identifier);
+            PerformIdentification(typeDenoter.Type);
         }
 
 
@@ -247,6 +290,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="characterLiteral">The node to perform identification on</param>
         private void PerformIdentificationOnCharacterLiteral(CharacterLiteralNode characterLiteral)
         {
+
         }
 
         /// <summary>
@@ -255,6 +299,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="identifier">The node to perform identification on</param>
         private void PerformIdentificationOnIdentifier(IdentifierNode identifier)
         {
+            //Needs more
         }
 
         /// <summary>
@@ -263,6 +308,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="integerLiteral">The node to perform identification on</param>
         private void PerformIdentificationOnIntegerLiteral(IntegerLiteralNode integerLiteral)
         {
+
         }
 
         /// <summary>
@@ -271,6 +317,7 @@ namespace Compiler.SemanticAnalysis
         /// <param name="operation">The node to perform identification on</param>
         private void PerformIdentificationOnOperator(OperatorNode operation)
         {
+            //Needs more
         }
     }
 }
