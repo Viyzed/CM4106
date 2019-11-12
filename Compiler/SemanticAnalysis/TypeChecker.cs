@@ -80,8 +80,15 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(assignCommand.Expression);
 
             // Check identifier is a variable
-
+            if(!(assignCommand.Identifier.Declaration is IVariableDeclarationNode varDeclaration))
+            {
+                Debugger.Write("Error: identifier is not a variable");
+            }
             // Check identifier and expression have same type
+            else if(varDeclaration.EntityType != assignCommand.Expression.Type)
+            {
+                Debugger.Write("Error: expression is wrong type for the variable");
+            }
         }
 
         /// <summary>
@@ -102,13 +109,41 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(callCommand.Parameter);
 
             // Check identifier is a function
+            if(!(callCommand.Identifier.Declaration is FunctionDeclarationNode functionDeclaration))
+            {
+                Debugger.Write("Error: Identifier is not a function");
+            }
             
             // If function should take 0 parameters
             //   Check parameter given is a blank parameter
+            else if(GetNumberOfArguments(functionDeclaration.Type) == 0)
+            {
+                if(!(callCommand.Parameter is BlankParameterNode))
+                {
+                    Debugger.Write("Error: function takes no arguments but is called with one");
+                }
+            }
             
             // If function should take 1 parameter
             //   Check parameter given is not a blank parameter
             //   Check parameter given has the same type as the expected parameter
+            else
+            {
+                if (callCommand.Parameter is BlankParameterNode)
+                {
+                    Debugger.Write("Error: Identifier is not a function");
+                }
+                else {
+                    if (GetArgumentType(functionDeclaration.Type, 0) != callCommand.Parameter.Type)
+                    {
+                        Debugger.Write("Error: function called with parameter of the wrong type");
+                    }
+                    if (ArgumentPassedByReference(functionDeclaration.Type, 0) && !(callCommand.Parameter is VarParameterNode))
+                    {
+                        Debugger.Write("Error: function requires a var parameter but has been given an expression parameter");
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -209,15 +244,40 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(binaryExpression.RightExpression);
 
             // Check the operator is a binary operation
+            if(!(binaryExpression.Op.Declaration is BinaryOperationDeclarationNode opDeclaration))
+            {
+                Debugger.Write("Error: operator is not a binary operator");
+            }
 
             // If the operation can take any type as arguments
             //    Check the left and right expressons have the same type
+            else
+            {
+                if (GetArgumentType(opDeclaration.Type, 0) == StandardEnvironment.AnyType)
+                {
+                    if (binaryExpression.LeftExpression.Type != binaryExpression.RightExpression.Type)
+                    {
+                        // Error: left and right hand side arguments not the same type
+                    }
+                }
+                // Else
+                //    Check the left expression has the same type as expected by the first argument of the operation
+                //    Check the right expression has the same type as expected by the second argument of the operation
+                else
+                {
+                    if (GetArgumentType(opDeclaration.Type, 0) != binaryExpression.LeftExpression.Type)
+                    {
+                        // Error: Left hand expression is wrong type
+                    }
+                    if (GetArgumentType(opDeclaration.Type, 1) != binaryExpression.RightExpression.Type)
+                    {
+                        // Error: Right hand expression is wrong type
+                    }
+                }
+                // Set the node's type to the return type of the operation
+                binaryExpression.Type = GetReturnType(opDeclaration.Type);
+            }
 
-            // Else
-            //    Check the left expression has the same type as expected by the first argument of the operation
-            //    Check the right expression has the same type as expected by the second argument of the operation
-
-            // Set the node's type to the return type of the operation
         }
 
         /// <summary>
@@ -274,10 +334,21 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(unaryExpression.Expression);
 
             // Check the operation is a unary expression
+            if (!(unaryExpression.Op.Declaration is UnaryOperationDeclarationNode opDeclaration))
+            {
+                Debugger.Write("Error: operator is not a unary operator");
+            }
 
             // Check the expected argument for the operation and the expession are the same type
-
-            // Set the node's type to be the return type of the operation
+            else
+            {
+                if (GetArgumentType(opDeclaration.Type, 0) != unaryExpression.Expression.Type)
+                {
+                    // Error: expression is the wrong type
+                }
+                // Set the node's type to be the return type of the operation
+                unaryExpression.Type = GetReturnType(opDeclaration.Type);
+            }
         }
 
 
@@ -299,7 +370,8 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(expressionParameter.Expression);
 
             // Set the node's type to be the type of the expression
-            
+            expressionParameter.Type = expressionParameter.Expression.Type;
+
         }
 
         /// <summary>
@@ -311,8 +383,16 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(varParameter.Identifier);
 
             // Check the identifier is a variable
+            if (!(varParameter.Identifier.Declaration is IVariableDeclarationNode varDeclaration))
+            {
+                Debugger.Write("Error: identifier is not a variable");
+            }
 
             // Set the node's type to be the type of the identifier
+            else
+            {
+                varParameter.Type = varDeclaration.EntityType;
+            }
         }
 
 
@@ -347,6 +427,10 @@ namespace Compiler.SemanticAnalysis
         private void PerformTypeCheckingOnCharacterLiteral(CharacterLiteralNode characterLiteral)
         {
             // Check the value is between short.MinValue and short.MaxValue
+            if (characterLiteral.Value < short.MinValue || characterLiteral.Value > short.MaxValue)
+            {
+                Debugger.Write("Error - value too big");         
+            }
         }
 
         /// <summary>
@@ -364,6 +448,11 @@ namespace Compiler.SemanticAnalysis
         private void PerformTypeCheckingOnIntegerLiteral(IntegerLiteralNode integerLiteral)
         {
             // Check the value is between short.MinValue and short.MaxValue
+            if (integerLiteral.Value < short.MinValue || integerLiteral.Value > short.MaxValue)
+            {
+                Debugger.Write("Error - value too big");
+            }
+
         }
 
         /// <summary>
