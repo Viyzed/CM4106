@@ -122,6 +122,10 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(ifCommand.ElseCommand);
 
             // Check the expression type is boolean
+            if(ifCommand.Expression.Type != StandardEnvironment.BooleanType)
+            {
+                Debugger.Write("Error: expression needs to be a boolean");
+            }
         }
 
         /// <summary>
@@ -154,6 +158,10 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(whileCommand.Command);
 
             // Check the expression type is boolean
+            if(whileCommand.Expression.Type != StandardEnvironment.BooleanType)
+            {
+                Debugger.Write("Error: expression needs to be boolean");
+            }
         }
 
 
@@ -221,6 +229,7 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(characterExpression.CharLit);
 
             // Set the node's type to be character
+            characterExpression.Type = StandardEnvironment.CharType;
         }
 
         /// <summary>
@@ -232,8 +241,15 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(idExpression.Identifier);
 
             // Check the identifier is either a variable or constant
-
+            if(!(idExpression.Identifier.Declaration is IEntityDeclarationNode declaration))
+            {
+                Debugger.Write("Error: identifier is not a variable or constant");
+            }
             // Set the node's type to be the same as the identifier
+            else
+            {
+                idExpression.Type = declaration.EntityType;
+            }
         }
 
         /// <summary>
@@ -245,6 +261,7 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(integerExpression.IntLit);
 
             // Set the node's type to be integer
+            integerExpression.Type = StandardEnvironment.IntegerType;
         }
 
         /// <summary>
@@ -282,6 +299,7 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(expressionParameter.Expression);
 
             // Set the node's type to be the type of the expression
+            
         }
 
         /// <summary>
@@ -308,8 +326,16 @@ namespace Compiler.SemanticAnalysis
             PerformTypeChecking(typeDenoter.Identifier);
 
             // Check the identifier is a type
+            if(!(typeDenoter.Identifier.Declaration is SimpleTypeDeclarationNode declaration))
+            {
+                Debugger.Write("Error: identifier is not a type");
+            }
 
             // Set the node's type to be the _declaration_ of the identifier
+            else
+            {
+                typeDenoter.Type = declaration;
+            }
         }
 
 
