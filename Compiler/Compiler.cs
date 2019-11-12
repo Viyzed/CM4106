@@ -40,6 +40,11 @@ namespace Compiler
         /// </summary>
         public DeclarationIdentifier Identifier { get; }
 
+        ///<summary>
+        /// The type checker
+        /// </summary>
+        public TypeChecker Checker { get; }
+
         /// <summary>
         /// Creates a new compiler
         /// </summary>
@@ -51,6 +56,7 @@ namespace Compiler
             Tokenizer = new Tokenizer(Reader, Reporter);
             Parser = new Parser(Reporter);
             Identifier = new DeclarationIdentifier(Reporter);
+            Checker = new TypeChecker(Reporter);
         }
 
         /// <summary>
@@ -78,6 +84,11 @@ namespace Compiler
             //Identify
             Write("Identifying...");
             Identifier.PerformIdentification(tree);
+            if (Reporter.HasErrors) return;
+            WriteLine("Done");
+
+            //Type check
+            Write("Type Checking...");
             if (Reporter.HasErrors) return;
             WriteLine("Done");
 

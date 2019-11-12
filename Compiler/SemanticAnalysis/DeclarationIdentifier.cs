@@ -126,8 +126,10 @@ namespace Compiler.SemanticAnalysis
         /// <param name="letCommand">The node to perform identification on</param>
         private void PerformIdentificationOnLetCommand(LetCommandNode letCommand)
         {
+            SymbolTable.OpenScope();
             PerformIdentification(letCommand.Declaration);
             PerformIdentification(letCommand.Command);
+            SymbolTable.CloseScope();
         }
 
         /// <summary>
@@ -160,7 +162,9 @@ namespace Compiler.SemanticAnalysis
         /// <param name="constDeclaration">The node to perform identification on</param>
         private void PerformIdentificationOnConstDeclaration(ConstDeclarationNode constDeclaration)
         {
-            //Needs more
+            Token token = constDeclaration.Identifier.IdentifierToken;
+            bool sucess = SymbolTable.Enter(token.Spelling, constDeclaration);
+            PerformIdentification(constDeclaration.Expression);
         }
 
         /// <summary>
@@ -181,7 +185,9 @@ namespace Compiler.SemanticAnalysis
         /// <param name="varDeclaration">The node to perform identification on</param>
         private void PerformIdentificationOnVarDeclaration(VarDeclarationNode varDeclaration)
         {
-            //Needs more
+            PerformIdentification(varDeclaration.TypeDenoter);
+            Token token = varDeclaration.Identifier.IdentifierToken;
+            bool success = SymbolTable.Enter(token.Spelling, varDeclaration);
         }
 
 
@@ -299,7 +305,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="identifier">The node to perform identification on</param>
         private void PerformIdentificationOnIdentifier(IdentifierNode identifier)
         {
-            //Needs more
+            IDeclarationNode declaration = SymbolTable.Retrieve(identifier.IdentifierToken.Spelling);
+            identifier.Declaration = declaration;
         }
 
         /// <summary>
@@ -317,7 +324,8 @@ namespace Compiler.SemanticAnalysis
         /// <param name="operation">The node to perform identification on</param>
         private void PerformIdentificationOnOperator(OperatorNode operation)
         {
-            //Needs more
+            IDeclarationNode declaration = SymbolTable.Retrieve(operation.OperatorToken.Spelling);
+            operation.Declaration = declaration;
         }
     }
 }
